@@ -14,13 +14,49 @@ public class IntegerList {
 	}
 	
 	public void addInteger(IntegerList newInteger) {
-		if (this.nextInteger == null) {
-			// this is the last integer in the list
-			this.nextInteger = newInteger;
-			newInteger.priorInteger=this;
+        if (this.nextInteger == null) {
+            // this is the last item in the list so add new item to end of list
+            this.nextInteger = newInteger;
+            newInteger.priorInteger=this;
 		} else {
-			this.nextInteger.addInteger(newInteger); // 
+			if (this.nextInteger.myInteger>newInteger.myInteger) {
+				// the new item needs to be added between this object and it's current next object
+				IntegerList tempInteger=this.nextInteger;
+				this.nextInteger=newInteger;
+				newInteger.priorInteger=this;
+				newInteger.nextInteger=tempInteger;
+				tempInteger.priorInteger=newInteger;
+			}
+			else {
+				this.nextInteger.addInteger(newInteger); // 
+			}
+        }
+    }
+	
+	public IntegerList checkAndChangeHead() {
+		IntegerList returnValue=this; // default is to assume no change necessary
+		
+		if (this.myInteger>this.nextInteger.myInteger) {
+			IntegerList tempInteger=this.nextInteger;
+			this.nextInteger.nextInteger.priorInteger=this;
+			this.nextInteger=this.nextInteger.nextInteger;
+			this.priorInteger=tempInteger;
+			tempInteger.nextInteger=this;
+			tempInteger.priorInteger=null;
+			returnValue=tempInteger;
 		}
+		return returnValue;
+	}
+	
+	public IntegerList getListTail() {
+		// loop to the end of the integer list and set tail to the final item
+		IntegerList listNavigator = this;
+		
+		while (listNavigator.nextInteger != null) {
+			listNavigator=listNavigator.nextInteger;
+		}
+		
+		return listNavigator;
 	}
 	
 	public boolean deleteInteger(IntegerList Integer) {
@@ -35,7 +71,8 @@ public class IntegerList {
 			// ultimately the garbage collector will remove it
 			tempInteger=this.nextInteger;
 			this.nextInteger = this.nextInteger.nextInteger;
-			tempInteger.nextInteger.priorInteger=tempInteger.priorInteger;
+			//tempInteger.nextInteger.priorInteger=tempInteger.priorInteger;
+			tempInteger.nextInteger.priorInteger=this;
 			return true;
 		} else {
 			return this.nextInteger.deleteInteger(Integer); // recursive program 
@@ -78,7 +115,6 @@ public class IntegerList {
 	}
 	
 	public IntegerList findInteger(int intToFind) {
-	
 		// I used a loop rather than recursive program as I find it easier
 		IntegerList intToReturn = null;
 		IntegerList listNavigator = null;

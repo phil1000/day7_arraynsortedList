@@ -6,7 +6,7 @@ public class ListUtilities {
 	
 	public void launch() {
 	
-		int[] integerArray = {1,4,5,7,22,66,14,35,111,76,84,21,65,47,48,31};
+		int[] integerArray = {2,1,5,7,22,66,14,35,111,76,84,21,65,47,48,31};
 		
 		this.populateListfromArray(integerArray);
 	
@@ -18,7 +18,10 @@ public class ListUtilities {
 		intListEnd.reversePrintIntegerlist();
 		
 		// Let's first find and then delete an entry with value = 84
-		this.deleteItemfromList(84);
+		if (this.deleteItemfromList(84)) {
+			//I know we'll find the item and so this line is a bit superfluous but it's good error catching form
+			System.out.println("We sure did delete that fella");
+		}
 		
 		// now print the remaining list 
 		intListStart.printIntegerlist();
@@ -34,20 +37,35 @@ public class ListUtilities {
 		for (int i=1; i<integerArray.length; i++) {			
 			IntegerList nextInteger = new IntegerList(integerArray[i]);
 			intListStart.addInteger(nextInteger); //add this integer to the end of the existing list
-			intListEnd=nextInteger;
 		}
+		// the above code won't replace firstInteger object if it's value > new Integer
+		// and so the following logic will do that if needed
+		
+		intListStart=intListStart.checkAndChangeHead();
+		
+		intListEnd=intListStart.getListTail(); // the end of the list may have changed so loop through to get it
 		System.out.print("The last integer is ");
 		intListEnd.printInteger();
-	}
+	} 
 	
-	public void deleteItemfromList(int value) {
+	public boolean deleteItemfromList(int value) {
+		boolean returnValue=false;
 		IntegerList integerToFind = null;
 		integerToFind = intListStart.findInteger(value);
-		System.out.print("The Integer to be deleted has been found and has value ");
-		integerToFind.printInteger();
 		
-		// now let's just delete this Integer
-		intListStart.deleteInteger(integerToFind);
+		if (integerToFind != null) {
+			returnValue=true;
+			System.out.print("The Integer to be deleted has been found and has value ");
+			integerToFind.printInteger();
+		
+			// now let's just delete this Integer
+			intListStart.deleteInteger(integerToFind);
+		}
+		else {
+			System.out.println("Could not find the integer");
+		}
+		
+		return returnValue;
 	}
 	
 	public static void main(String[] args) {
